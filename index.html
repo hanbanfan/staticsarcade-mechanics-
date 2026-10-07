@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Statics Arcade — Test 1</title>
+
+<style>
+:root{
+  --bg:#101217;
+  --card:#191c23;
+  --soft:#242833;
+  --line:#353a47;
+  --text:#f7f7f8;
+  --muted:#a7abb5;
+  --accent:#b8c0ff;
+  --good:#194f3c;
+  --bad:#612932;
+  --warn:#5a451c;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.45;
+}
+
+body.calm *{
+  animation:none!important;
+  transition:none!important;
+}
+
+main{
+  width:min(880px,92%);
+  margin:auto;
+  padding:26px 0 80px;
+}
+
+h1{
+  margin:4px 0;
+  font-size:clamp(42px,8vw,76px);
+  letter-spacing:-3px;
+  line-height:.95;
+}
+
+h2{line-height:1.2}
+
+p{max-width:760px}
+
+button{
+  font:inherit;
+  font-weight:750;
+  cursor:pointer;
+  border:0;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:22px;
+  margin:14px 0;
+}
+
+.eyebrow{
+  color:var(--accent);
+  letter-spacing:.12em;
+  font-size:12px;
+  font-weight:900;
+}
+
+.muted{color:var(--muted)}
+
+.primary,.secondary,.danger,.goodbtn{
+  border-radius:13px;
+  padding:13px 16px;
+}
+
+.primary{
+  background:#f7f7f8;
+  color:#101217;
+}
+
+.secondary{
+  background:var(--soft);
+  color:white;
+  border:1px solid var(--line);
+}
+
+.danger{
+  background:var(--bad);
+  color:white;
+}
+
+.goodbtn{
+  background:var(--good);
+  color:white;
+}
+
+.menu{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin:18px 0;
+}
+
+.stat{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:15px;
+  text-align:center;
+}
+
+.stat span{
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.stat strong{
+  font-size:27px;
+}
+
+.answer{
+  width:100%;
+  text-align:left;
+  color:white;
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:15px;
+  margin:6px 0;
+}
+
+.answer:hover{border-color:#858da2}
+.answer.correct{background:var(--good)}
+.answer.wrong{background:var(--bad)}
+
+.question{
+  font-size:clamp(25px,4vw,37px);
+  line-height:1.18;
+}
+
+.progress{
+  height:8px;
+  background:var(--soft);
+  border-radius:999px;
+  overflow:hidden;
+  margin:15px 0;
+}
+
+.progress div{
+  height:100%;
+  background:white;
+}
+
+.feedback{
+  margin-top:18px;
+  background:#101217;
+  border-radius:14px;
+  padding:17px;
+}
+
+.hint{
+  background:#272137;
+  border-left:4px solid #a78bfa;
+  padding:14px;
+  border-radius:10px;
+  margin:12px 0;
+}
+
+.hidden{display:none!important}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+}
+
+.pill{
+  padding:7px 10px;
+  border-radius:999px;
+  background:var(--soft);
+  font-size:12px;
+}
+
+.formula{
+  background:#11141a;
+  padding:14px;
+  border-radius:12px;
+  margin:8px 0;
+}
+
+.formula code{
+  font-size:17px;
+  white-space:pre-wrap;
+}
+
+.sheetItem{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:12px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.sheetItem input{
+  width:20px;
+  height:20px;
+}
+
+.memoryCard{
+  min-height:260px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  cursor:pointer;
+}
+
+.memoryCard h2{
+  font-size:clamp(28px,5vw,44px);
+}
+
+.videoItem{
+  padding:15px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.videoItem strong{
+  display:block;
+  margin-bottom:5px;
+}
+
+.masteryRow{
+  display:grid;
+  grid-template-columns:150px 1fr 50px;
+  gap:10px;
+  align-items:center;
+  margin:9px 0;
+}
+
+.masterBar{
+  background:#2a2e38;
+  height:10px;
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.masterBar div{
+  height:100%;
+  background:#d8dcff;
+}
+
+.brainBox{
+  border-left:4px solid var(--accent);
+}
+
+textarea{
+  width:100%;
+  min-height:260px;
+  background:#0d0f13;
+  color:white;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:14px;
+}
+
+@media(max-width:650px){
+  .menu,.stats{grid-template-columns:1fr}
+  .masteryRow{grid-template-columns:110px 1fr 45px}
+}
+</style>
+</head>
+
+<body class="calm">
+
+<main>
+
+<div class="topbar">
+  <span class="eyebrow">CET 2150 · TEST 1 MODE</span>
+  <button class="secondary" onclick="toggleCalm()">🧠 Calm Mode</button>
+</div>
+
+<h1>Statics Arcade</h1>
+<p class="muted">
+Learn it → recall it → solve it → repeat what you miss.
+No timer. No punishment. Minimal bullshit.
+</p>
+
+<div class="stats">
+  <div class="stat">
+    <span>Readiness</span>
+    <strong id="readiness">0%</strong>
+  </div>
+  <div class="stat">
+    <span>Streak</span>
+    <strong id="streak">0</strong>
+  </div>
+  <div class="stat">
+    <span>Questions</span>
+    <strong id="answered">0</strong>
+  </div>
+</div>
+
+<section id="home">
+
+<div class="card brainBox">
+  <strong>TEST TOMORROW MODE</strong>
+  <p>
+    Start with Diagnostic. Then hit Weak Spots.
+    Finish with Practice Test + Formula Sheet.
+  </p>
+  <button class="primary" onclick="startDiagnostic()">
+    🔥 Start Test 1 Diagnostic
+  </button>
+</div>
+
+<div class="card">
+<h2>Study</h2>
+
+<div class="menu">
+  <button class="secondary" onclick="startWeak()">🎯 Weak Spots</button>
+  <button class="secondary" onclick="startMemory()">🧠 Memory Drill</button>
+  <button class="secondary" onclick="startTopic('vectors')">🎯 Vectors</button>
+  <button class="secondary" onclick="startTopic('moments')">🔧 Moments</button>
+  <button class="secondary" onclick="startTopic('fbd')">🧩 FBD + Supports</button>
+  <button class="secondary" onclick="startTopic('equilibrium')">⚖️ Equilibrium</button>
+  <button class="secondary" onclick="startTopic('centroids')">📐 Centroids</button>
+  <button class="secondary" onclick="startTopic('distributed')">🏗️ Distributed Loads</button>
+  <button class="secondary" onclick="showFormulaBuilder()">📝 Formula Sheet Builder</button>
+  <button class="secondary" onclick="showVideos()">▶ Video Rescue</button>
+</div>
+</div>
+
+<div class="card">
+<h2>Mastery Map</h2>
+<div id="masteryMap"></div>
+</div>
+
+</section>
+
+
+<section id="quiz" class="hidden">
+
+<div class="topbar">
+<button class="secondary" onclick="goHome()">← Home</button>
+<span class="pill" id="modeName"></span>
+</div>
+
+<div class="progress">
+  <div id="progressBar"></div>
+</div>
+
+<div class="card">
+
+<div class="eyebrow" id="qTopic"></div>
+
+<h2 class="question" id="qText"></h2>
+
+<div id="hintBox"></div>
+
+<div id="answers"></div>
+
+<div class="menu" id="preAnswerTools">
+  <button class="secondary" onclick="showHint()">💡 Hint</button>
+  <button class="secondary" onclick="forgot()">🧠 I Forgot</button>
+</div>
+
+<div id="feedback"></div>
+
+</div>
+
+</section>
+
+
+<section id="memory" class="hidden">
+
+<button class="secondary" onclick="goHome()">← Home</button>
+
+<div class="card memoryCard" onclick="flipMemory()">
+<div>
+<div class="eyebrow" id="memoryTopic"></div>
+<h2 id="memoryText"></h2>
+<p class="muted">tap to reveal</p>
+</div>
+</div>
+
+<div class="menu hidden" id="memoryButtons">
+<button class="danger" onclick="rateMemory(false)">Forgot</button>
+<button class="goodbtn" onclick="rateMemory(true)">Knew it</button>
+</div>
+
+</section>
+
+
+<section id="formulaBuilder" class="hidden">
+
+<button class="secondary" onclick="goHome()">← Home</button>
+
+<div class="card">
+<div class="eyebrow">BUILD FROM TEST 1</div>
+<h2>Formula Sheet Builder</h2>
+<p class="muted">
+Check what you want on your sheet. Keep formulas you forget.
+Remove formulas you already know cold.
+</p>
+
+<div id="formulaChoices"></div>
+
+<button class="primary" onclick="buildSheet()">Build My Sheet</button>
+</div>
+
+<div class="card">
+<h3>Your Formula Sheet</h3>
+<textarea id="sheetOutput"></textarea>
+
+<div class="menu">
+<button class="primary" onclick="copySheet()">Copy Sheet</button>
+<button class="secondary" onclick="selectWeakFormulas()">Use My Weak Spots</button>
+</div>
+</div>
+
+</section>
+
+
+<section id="videos" class="hidden">
+
+<button class="secondary" onclick="goHome()">← Home</button>
+
+<div class="card">
+<div class="eyebrow">ONLY WATCH WHAT YOU NEED</div>
+<h2>Video Rescue</h2>
+
+<p class="muted">
+Watch one concept, then immediately come back and do problems.
+Do not fall into a two-hour YouTube hole.
+</p>
+
+<div id="videoList"></div>
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+const STORE="statics_arcade_exam1_v3";
+
+const state=JSON.parse(localStorage.getItem(STORE)||JSON.stringify({
+  answered:0,
+  correct:0,
+  streak:0,
+  mastery:{},
+  misses:{}
+}));
+
+const topics={
+  vectors:"Vectors & 3D Forces",
+  moments:"Moments & Couples",
+  fbd:"FBD + Supports",
+  equilibrium:"Equilibrium",
+  centroids:"Centroids",
+  distributed:"Distributed Loads"
+};
+
+const QUESTIONS=[
+
+{
+id:"v1",topic:"vectors",
+q:"A 500 N force acts 30° above +x. What is Fx?",
+a:["250 N","433 N","500 N","577 N"],
+c:1,
+hint:["Angle is measured from x.","x component uses cosine.","Fx = F cos θ"],
+why:"Fx = 500 cos(30°) ≈ 433 N.",
+trap:"Do not automatically use sine just because you see an angle."
+},
+
+{
+id:"v2",topic:"vectors",
+q:"A force has Fx = 300 N and Fy = 400 N. Magnitude?",
+a:["100 N","350 N","500 N","700 N"],
+c:2,
+hint:["Components are perpendicular.","Use Pythagorean theorem.","F = √(Fx² + Fy²)"],
+why:"F = √(300² + 400²) = 500 N."
+},
+
+{
+id:"v3",topic:"vectors",
+q:"Position vector from A to B is:",
+a:["A − B","B − A","A + B","|A| + |B|"],
+c:1,
+hint:["Think FROM A TO B.","End minus start.","rAB = rB − rA"],
+why:"Always use endpoint minus starting point."
+},
+
+{
+id:"v4",topic:"vectors",
+q:"How do you make a unit vector λ from r?",
+a:["λ = |r|r","λ = r / |r|","λ = r²","λ = 1/r"],
+c:1,
+hint:["A unit vector must have magnitude 1.","Divide by the vector length.","λ = r/|r|"],
+why:"Normalizing r gives a direction vector with magnitude 1."
+},
+
+{
+id:"v5",topic:"vectors",
+q:"If a cable force has magnitude F and direction λ, its vector is:",
+a:["F⃗ = Fλ","F⃗ = λ/F","F⃗ = F + λ","F⃗ = λ²"],
+c:0,
+hint:["Magnitude × direction.","λ only controls direction.","F⃗ = F λ"],
+why:"Force along a known line is magnitude multiplied by its unit direction vector."
+},
+
+{
+id:"v6",topic:"vectors",
+q:"What does A · B produce?",
+a:["A scalar","A vector","A moment","A coordinate point"],
+c:0,
+hint:["Dot product is also called scalar product."],
+why:"The dot product produces a scalar and is useful for projection and angles."
+},
+
+{
+id:"m1",topic:"moments",
+q:"Moment magnitude from a perpendicular force is:",
+a:["M = F/d","M = Fd","M = F + d","M = d/F"],
+c:1,
+hint:["Force × perpendicular distance.","M = Fd⊥"],
+why:"Moment equals force times perpendicular moment arm."
+},
+
+{
+id:"m2",topic:"moments",
+q:"Vector moment about O is:",
+a:["r · F","r × F","F/r","r + F"],
+c:1,
+hint:["Moments use the cross product."],
+why:"M⃗O = r⃗ × F⃗."
+},
+
+{
+id:"m3",topic:"moments",
+q:"A downward force acting to the right of a pivot tends to rotate:",
+a:["Counterclockwise","Clockwise","Neither","Both"],
+c:1,
+hint:["Imagine pushing the right side downward."],
+why:"The tendency is clockwise."
+},
+
+{
+id:"m4",topic:"moments",
+q:"Why take moments about a point containing unknown reactions?",
+a:[
+"They become zero in the moment equation",
+"The forces disappear physically",
+"It changes their units",
+"It doubles the force"
+],
+c:0,
+hint:["What is the moment arm of a force passing through the moment center?"],
+why:"A force whose line of action passes through the moment center has zero moment arm."
+},
+
+{
+id:"f1",topic:"fbd",
+q:"The FIRST step in a rigid-body equilibrium problem should usually be:",
+a:[
+"Guess the answer",
+"Draw a free-body diagram",
+"Use ΣM immediately",
+"Calculate the centroid"
+],
+c:1,
+hint:["Isolate the body first."],
+why:"The FBD identifies all external loads and unknown reactions before equations are written."
+},
+
+{
+id:"f2",topic:"fbd",
+q:"A 2D pin support normally produces:",
+a:["Ax only","Ay only","Ax and Ay","Ax, Ay and a moment"],
+c:2,
+hint:["A pin stops x and y translation but allows rotation."],
+why:"A pin gives two force components and no reaction moment."
+},
+
+{
+id:"f3",topic:"fbd",
+q:"A frictionless roller on a surface produces:",
+a:[
+"One reaction normal to the surface",
+"One reaction parallel to the surface",
+"Two force reactions",
+"A reaction moment"
+],
+c:0,
+hint:["ROLLER → NORMAL"],
+why:"A frictionless roller reaction is perpendicular to the supporting surface."
+},
+
+{
+id:"f4",topic:"fbd",
+q:"A fixed support in 2D produces:",
+a:[
+"One force",
+"Two forces",
+"Two forces and a reaction moment",
+"A moment only"
+],
+c:2,
+hint:["Fixed means no x motion, no y motion, and no rotation."],
+why:"A fixed support has Ax, Ay, and M."
+},
+
+{
+id:"f5",topic:"fbd",
+q:"A short cable reaction acts:",
+a:[
+"Along the cable",
+"Perpendicular to the cable",
+"Vertically only",
+"With a reaction moment"
+],
+c:0,
+hint:["A cable can only pull along itself."],
+why:"Cable tension acts along the cable's line of action."
+},
+
+{
+id:"e1",topic:"equilibrium",
+q:"2D rigid-body equilibrium requires:",
+a:[
+"ΣFx = 0 only",
+"ΣFy = 0 only",
+"ΣFx = 0, ΣFy = 0, ΣM = 0",
+"ΣM = 0 only"
+],
+c:2,
+hint:["A rigid body must not translate or rotate."],
+why:"Three independent equilibrium equations are available in 2D."
+},
+
+{
+id:"e2",topic:"equilibrium",
+q:"With ordinary 2D rigid-body equilibrium equations, you can normally solve at most:",
+a:["1 unknown","2 unknowns","3 unknowns","6 unknowns"],
+c:2,
+hint:["How many independent equilibrium equations are available?"],
+why:"ΣFx, ΣFy, and ΣM provide three independent equations."
+},
+
+{
+id:"e3",topic:"equilibrium",
+q:"A system with more unknown reactions than independent equilibrium equations is:",
+a:[
+"Statically indeterminate",
+"Automatically stable",
+"Always a particle",
+"A zero-force system"
+],
+c:0,
+hint:["Too many unknowns for statics equations alone."],
+why:"More reaction unknowns than equilibrium equations makes the system statically indeterminate."
+},
+
+{
+id:"e4",topic:"equilibrium",
+q:"After solving reactions, a good check is:",
+a:[
+"Change all signs",
+"Verify another equilibrium equation",
+"Round everything to 1 digit",
+"Delete the FBD"
+],
+c:1,
+hint:["Use an equation you did not rely on heavily."],
+why:"A separate force or moment equilibrium check can catch sign/setup errors."
+},
+
+{
+id:"c1",topic:"centroids",
+q:"For a composite area, x̄ is:",
+a:[
+"ΣA / ΣxA",
+"ΣxA / ΣA",
+"ΣyA / ΣA",
+"ΣA²"
+],
+c:1,
+hint:["Think area-weighted average of x locations."],
+why:"x̄ = Σ(xA)/ΣA."
+},
+
+{
+id:"c2",topic:"centroids",
+q:"For a composite area, ȳ is:",
+a:[
+"ΣyA / ΣA",
+"ΣxA / ΣA",
+"ΣA / ΣyA",
+"ΣA²"
+],
+c:0,
+hint:["Area-weighted average of y locations."],
+why:"ȳ = Σ(yA)/ΣA."
+},
+
+{
+id:"c3",topic:"centroids",
+q:"A hole or cutout in a composite-area table should usually use:",
+a:[
+"Positive area",
+"Negative area",
+"Zero area",
+"Double area"
+],
+c:1,
+hint:["You are removing material."],
+why:"Treat a cutout as negative area and negative first-moment contribution."
+},
+
+{
+id:"c4",topic:"centroids",
+q:"If an area has a line of symmetry, its centroid:",
+a:[
+"Must lie on that line",
+"Can never lie on that line",
+"Is always at the origin",
+"Is always outside the shape"
+],
+c:0,
+hint:["Symmetry can save you math."],
+why:"The centroid lies on every symmetry axis."
+},
+
+{
+id:"d1",topic:"distributed",
+q:"The magnitude of the equivalent concentrated force for a distributed load equals:",
+a:[
+"The maximum load intensity",
+"The area under the load diagram",
+"The beam length only",
+"The centroid coordinate"
+],
+c:1,
+hint:["Think geometry of the load diagram."],
+why:"Equivalent force magnitude equals the area under w(x)."
+},
+
+{
+id:"d2",topic:"distributed",
+q:"The equivalent concentrated force acts through:",
+a:[
+"The left end",
+"The right end",
+"The centroid of the load diagram",
+"The largest support"
+],
+c:2,
+hint:["Magnitude comes from area. Location comes from..."],
+why:"Its line of action passes through the centroid of the distributed-load area."
+},
+
+{
+id:"d3",topic:"distributed",
+q:"Uniform load w over length L has resultant magnitude:",
+a:["w/L","wL","wL²","L/w"],
+c:1,
+hint:["Area of a rectangle."],
+why:"Area = width × height = Lw."
+},
+
+{
+id:"d4",topic:"distributed",
+q:"A triangular load from 0 to w0 over length L has resultant:",
+a:["w0L","½w0L","⅓w0L","2w0L"],
+c:1,
+hint:["Area of a triangle."],
+why:"Resultant magnitude = ½(base)(height) = ½w0L."
+}
+
+];
+
+
+const MEMORY=[
+
+["2D rigid body","ΣFx = 0\nΣFy = 0\nΣM = 0"],
+
+["Position vector A → B","rAB = B − A"],
+
+["Unit vector","λ = r / |r|"],
+
+["Force along a line","F⃗ = F λ"],
+
+["Moment using distance","M = F d⊥"],
+
+["Vector moment","M⃗ = r⃗ × F⃗"],
+
+["Pin support","Ax + Ay"],
+
+["Roller","ONE reaction NORMAL to surface"],
+
+["Fixed support","Ax + Ay + reaction moment"],
+
+["Cable","Tension along cable only"],
+
+["Composite centroid x","x̄ = ΣxA / ΣA"],
+
+["Composite centroid y","ȳ = ΣyA / ΣA"],
+
+["Hole / cutout","Use NEGATIVE area"],
+
+["Distributed load magnitude","AREA under load diagram"],
+
+["Distributed load location","CENTROID of load diagram"],
+
+["Best moment-point strategy",
+"Choose a point that eliminates the most unknown reactions"],
+
+["Big calculator rule",
+"Keep 4–5 significant figures. Round at the END."]
+
+];
+
+
+const FORMULAS=[
+
+{
+id:"forcecomp",
+title:"2D Force Components",
+text:"Fx = F cos θ\nFy = F sin θ\n\nCHECK: depends on which axis θ is measured from."
+},
+
+{
+id:"posvec",
+title:"3D Position Vector",
+text:"rAB = rB − rA\n|r| = √(rx² + ry² + rz²)"
+},
+
+{
+id:"unit",
+title:"Unit Vector / Force Along Line",
+text:"λAB = rAB / |rAB|\nF⃗ = F λAB\n\nCHECK: |λ| = 1"
+},
+
+{
+id:"moment",
+title:"Moments",
+text:"M = F d⊥\nM⃗O = r⃗ × F⃗\n2D: MO = xFy − yFx"
+},
+
+{
+id:"eq2d",
+title:"2D Rigid Body Equilibrium",
+text:"ΣFx = 0\nΣFy = 0\nΣM = 0\n\nTIP: take moments where unknown reactions intersect."
+},
+
+{
+id:"supports",
+title:"Support Reactions",
+text:"PIN → Ax, Ay\nROLLER → 1 normal reaction\nFIXED → Ax, Ay, M\nCABLE → tension along cable"
+},
+
+{
+id:"centroid",
+title:"Composite Centroids",
+text:"x̄ = ΣxA / ΣA\nȳ = ΣyA / ΣA\n\nHOLE → negative area\nCHECK symmetry first."
+},
+
+{
+id:"distributed",
+title:"Distributed Loads",
+text:"Equivalent force = AREA under w(x)\nLocation = CENTROID of load area\n\nThen replace distributed load with point load."
+}
+
+];
+
+
+const VIDEOS=[
+
+{
+topic:"3D vectors",
+title:"Jeff Hanson — Statics Lesson 11: Finding 3D Vectors When Given Coordinates",
+search:"Jeff Hanson Statics Lesson 11 Finding 3D Vectors When Given Coordinates"
+},
+
+{
+topic:"distributed loads",
+title:"Jeff Hanson — Statics Lesson 46: Distributed Loads Using Centroids",
+search:"Jeff Hanson Statics Lesson 46 Distributed Loads Using Centroids"
+},
+
+{
+topic:"free-body diagrams",
+title:"Jeff Hanson — Free Body Diagrams / Support Reactions",
+search:"Jeff Hanson Statics free body diagrams support reactions"
+},
+
+{
+topic:"moments",
+title:"Jeff Hanson — Moment of a Force",
+search:"Jeff Hanson Statics moment of a force"
+},
+
+{
+topic:"equilibrium",
+title:"Jeff Hanson — Rigid Body Equilibrium",
+search:"Jeff Hanson Statics rigid body equilibrium"
+},
+
+{
+topic:"centroids",
+title:"Jeff Hanson — Centroids Composite Areas",
+search:"Jeff Hanson Statics centroids composite areas"
+}
+
+];
+
+
+let deck=[];
+let qIndex=0;
+let current=null;
+let hintIndex=0;
+let memoryIndex=0;
+let memoryFlipped=false;
+let mode="";
+
+
+function save(){
+  localStorage.setItem(STORE,JSON.stringify(state));
+  renderStats();
+}
+
+
+function shuffle(a){
+  return [...a].sort(()=>Math.random()-.5);
+}
+
+
+function hideAll(){
+  ["home","quiz","memory","formulaBuilder","videos"]
+  .forEach(id=>document.getElementById(id).classList.add("hidden"));
+}
+
+
+function goHome(){
+  hideAll();
+  document.getElementById("home").classList.remove("hidden");
+  renderStats();
+  renderMastery();
+}
+
+
+function toggleCalm(){
+  document.body.classList.toggle("calm");
+}
+
+
+function masteryFor(topic){
+  const qs=QUESTIONS.filter(q=>q.topic===topic);
+
+  if(!qs.length)return 0;
+
+  const total=qs.reduce((sum,q)=>sum+(state.mastery[q.id]||0),0);
+
+  return Math.round(total/qs.length);
+}
+
+
+function renderStats(){
+
+  document.getElementById("answered").textContent=state.answered;
+  document.getElementById("streak").textContent=state.streak;
+
+  let overall=0;
+
+  Object.keys(topics).forEach(t=>{
+    overall+=masteryFor(t);
+  });
+
+  overall=Math.round(overall/Object.keys(topics).length);
+
+  document.getElementById("readiness").textContent=overall+"%";
+}
+
+
+function renderMastery(){
+
+  const box=document.getElementById("masteryMap");
+
+  box.innerHTML=Object.entries(topics).map(([id,name])=>{
+
+    const value=masteryFor(id);
+
+    return `
+    <div class="masteryRow">
+
+      <span>${name}</span>
+
+      <div class="masterBar">
+        <div style="width:${value}%"></div>
+      </div>
+
+      <strong>${value}%</strong>
+
+    </div>
+    `;
+
+  }).join("");
+}
+
+
+function startDiagnostic(){
+
+  mode="Test 1 Diagnostic";
+
+  deck=shuffle(QUESTIONS);
+
+  qIndex=0;
+
+  beginQuiz();
+}
+
+
+function startTopic(topic){
+
+  mode=topics[topic];
+
+  deck=shuffle(
+    QUESTIONS.filter(q=>q.topic===topic)
+  );
+
+  qIndex=0;
+
+  beginQuiz();
+}
+
+
+function startWeak(){
+
+  mode="Weak Spot Rescue";
+
+  const weak=QUESTIONS
+  .filter(q=>(state.mastery[q.id]||0)<70)
+  .sort((a,b)=>
+    (state.mastery[a.id]||0)-
+    (state.mastery[b.id]||0)
+  );
+
+  deck=shuffle(
+    weak.length ? weak : QUESTIONS
+  );
+
+  qIndex=0;
+
+  beginQuiz();
+}
+
+
+function beginQuiz(){
+
+  hideAll();
+
+  document.getElementById("quiz")
+  .classList.remove("hidden");
+
+  document.getElementById("modeName").textContent=mode;
+
+  loadQuestion();
+}
+
+
+function loadQuestion(){
+
+  if(qIndex>=deck.length){
+    goHome();
+    return;
+  }
+
+  current=deck[qIndex];
+
+  hintIndex=0;
+
+  document.getElementById("qTopic").textContent=
+    topics[current.topic];
+
+  document.getElementById("qText").textContent=
+    current.q;
+
+  document.getElementById("hintBox").innerHTML="";
+
+  document.getElementById("feedback").innerHTML="";
+
+  document.getElementById("preAnswerTools")
+  .classList.remove("hidden");
+
+  const answerBox=document.getElementById("answers");
+
+  answerBox.innerHTML="";
+
+  current.a.forEach((answer,i)=>{
+
+    const btn=document.createElement("button");
+
+    btn.className="answer";
+
+    btn.textContent=answer;
+
+    btn.onclick=()=>answerQuestion(i,btn);
+
+    answerBox.appendChild(btn);
+  });
+
+  document.getElementById("progressBar").style.width=
+    ((qIndex/deck.length)*100)+"%";
+}
+
+
+function showHint(){
+
+  const hints=current.hint||[];
+
+  if(!hints.length)return;
+
+  const text=hints[Math.min(hintIndex,hints.length-1)];
+
+  hintIndex++;
+
+  document.getElementById("hintBox").innerHTML=
+    `<div class="hint"><strong>Hint ${Math.min(hintIndex,hints.length)}:</strong> ${text}</div>`;
+}
+
+
+function forgot(){
+
+  state.streak=0;
+
+  state.mastery[current.id]=Math.max(
+    0,
+    (state.mastery[current.id]||0)-8
+  );
+
+  state.misses[current.id]=(state.misses[current.id]||0)+1;
+
+  document.getElementById("feedback").innerHTML=
+  `
+  <div class="feedback">
+
+    <strong>No problem. Learn this part:</strong>
+
+    <p>${current.why}</p>
+
+    ${current.trap
+      ? `<p><strong>Watch for:</strong> ${current.trap}</p>`
+      : ""}
+
+    <button class="primary" onclick="requeueAndNext()">
+      Try it again later →
+    </button>
+
+  </div>
+  `;
+
+  disableAnswers();
+  document.getElementById("preAnswerTools").classList.add("hidden");
+
+  save();
+}
+
+
+function disableAnswers(){
+
+  [...document.querySelectorAll(".answer")]
+  .forEach(b=>b.disabled=true);
+}
+
+
+function answerQuestion(choice,button){
+
+  disableAnswers();
+
+  document.getElementById("preAnswerTools").classList.add("hidden");
+
+  state.answered++;
+
+  const buttons=[...document.querySelectorAll(".answer")];
+
+  const correct=choice===current.c;
+
+  if(correct){
+
+    button.classList.add("correct");
+
+    state.correct++;
+
+    state.streak++;
+
+    let gain=hintIndex>0 ? 7 : 15;
+
+    state.mastery[current.id]=Math.min(
+      100,
+      (state.mastery[current.id]||0)+gain
+    );
+
+  }else{
+
+    button.classList.add("wrong");
+
+    buttons[current.c].classList.add("correct");
+
+    state.streak=0;
+
+    state.misses[current.id]=(state.misses[current.id]||0)+1;
+
+    state.mastery[current.id]=Math.max(
+      0,
+      (state.mastery[current.id]||0)-7
+    );
+  }
+
+
+  document.getElementById("feedback").innerHTML=
+  `
+  <div class="feedback">
+
+    <strong>${correct ? "✓ Correct" : "✗ Fix this one"}</strong>
+
+    <p>${current.why}</p>
+
+    ${current.trap
+      ? `<p><strong>Common trap:</strong> ${current.trap}</p>`
+      : ""}
+
+    <button class="primary" onclick="${correct ? "nextQuestion()" : "requeueAndNext()"}">
+      ${correct ? "Next →" : "Practice this again later →"}
+    </button>
+
+  </div>
+  `;
+
+  save();
+}
+
+
+function requeueAndNext(){
+
+  const insert=Math.min(
+    qIndex+4,
+    deck.length
+  );
+
+  deck.splice(insert,0,current);
+
+  nextQuestion();
+}
+
+
+function nextQuestion(){
+
+  qIndex++;
+
+  loadQuestion();
+}
+
+
+function startMemory(){
+
+  hideAll();
+
+  document.getElementById("memory")
+  .classList.remove("hidden");
+
+  memoryIndex=0;
+
+  renderMemory();
+}
+
+
+function renderMemory(){
+
+  memoryFlipped=false;
+
+  const card=MEMORY[memoryIndex];
+
+  document.getElementById("memoryTopic").textContent="RECALL";
+
+  document.getElementById("memoryText").textContent=card[0];
+
+  document.getElementById("memoryButtons")
+  .classList.add("hidden");
+}
+
+
+function flipMemory(){
+
+  if(memoryFlipped)return;
+
+  memoryFlipped=true;
+
+  document.getElementById("memoryText").textContent=
+    MEMORY[memoryIndex][1];
+
+  document.getElementById("memoryButtons")
+  .classList.remove("hidden");
+}
+
+
+function rateMemory(knew){
+
+  if(!knew){
+
+    const missed=MEMORY.splice(memoryIndex,1)[0];
+
+    MEMORY.push(missed);
+
+  }else{
+
+    memoryIndex++;
+  }
+
+  if(memoryIndex>=MEMORY.length){
+    memoryIndex=0;
+  }
+
+  renderMemory();
+}
+
+
+function showFormulaBuilder(){
+
+  hideAll();
+
+  document.getElementById("formulaBuilder")
+  .classList.remove("hidden");
+
+  const box=document.getElementById("formulaChoices");
+
+  box.innerHTML=FORMULAS.map(f=>`
+  <label class="sheetItem">
+
+    <input
+      type="checkbox"
+      class="formulaCheck"
+      value="${f.id}"
+      checked>
+
+    <div>
+      <strong>${f.title}</strong>
+      <div class="formula"><code>${f.text}</code></div>
+    </div>
+
+  </label>
+  `).join("");
+
+  buildSheet();
+}
+
+
+function buildSheet(){
+
+  const selected=[
+    ...document.querySelectorAll(".formulaCheck:checked")
+  ].map(x=>x.value);
+
+  const text=FORMULAS
+  .filter(f=>selected.includes(f.id))
+  .map(f=>`${f.title.toUpperCase()}\n${f.text}`)
+  .join("\n\n----------------------\n\n");
+
+  document.getElementById("sheetOutput").value=text;
+}
+
+
+function selectWeakFormulas(){
+
+  const weakTopics=Object.keys(topics)
+  .filter(t=>masteryFor(t)<75);
+
+  document.querySelectorAll(".formulaCheck")
+  .forEach(x=>x.checked=false);
+
+  const mapping={
+    vectors:["forcecomp","posvec","unit"],
+    moments:["moment"],
+    fbd:["supports"],
+    equilibrium:["eq2d"],
+    centroids:["centroid"],
+    distributed:["distributed"]
+  };
+
+  weakTopics.forEach(topic=>{
+    (mapping[topic]||[]).forEach(id=>{
+      const cb=document.querySelector(
+        `.formulaCheck[value="${id}"]`
+      );
+
+      if(cb)cb.checked=true;
+    });
+  });
+
+  buildSheet();
+}
+
+
+function copySheet(){
+
+  const text=document.getElementById("sheetOutput").value;
+
+  navigator.clipboard.writeText(text);
+
+  alert("Formula sheet copied.");
+}
+
+
+function showVideos(){
+
+  hideAll();
+
+  document.getElementById("videos")
+  .classList.remove("hidden");
+
+  document.getElementById("videoList").innerHTML=
+  VIDEOS.map(v=>`
+  <div class="videoItem">
+
+    <span class="eyebrow">${v.topic}</span>
+
+    <strong>${v.title}</strong>
+
+    <p class="muted">${v.search}</p>
+
+    <button
+      class="secondary"
+      onclick="copyVideoSearch('${v.search.replaceAll("'","")}')">
+
+      Copy YouTube Search
+
+    </button>
+
+  </div>
+  `).join("");
+}
+
+
+function copyVideoSearch(text){
+
+  navigator.clipboard.writeText(text);
+
+  alert("Copied. Paste it into YouTube search.");
+}
+
+
+renderStats();
+renderMastery();
+
+</script>
+
+</body>
+</html>
