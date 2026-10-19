@@ -1466,6 +1466,124 @@ function copyVideoSearch(text){
 }
 
 
+
+// EXAM1_NOTES_FOCUS_V1
+// Scope based on supplied lecture notes.
+// Preserve existing mastery and saved progress.
+
+const excludedExamTopics = new Set([
+  "centroids", "distributed"
+]);
+
+// Remove unrelated topics from Exam 1 practice.
+for (let i = QUESTIONS.length - 1; i >= 0; i--) {
+  if (excludedExamTopics.has(QUESTIONS[i].topic)) {
+    QUESTIONS.splice(i, 1);
+  }
+}
+
+for (const topic of excludedExamTopics) {
+  delete topics[topic];
+}
+
+// Add questions aligned with lecture notes.
+const extraExamQuestions = [
+  {
+    id:"exam1_cable_01",
+    topic:"vectors",
+    q:"A 500 N weight hangs from two identical cables at 30 degrees above horizontal. Find tension in each.",
+    a:["250 N","500 N","1000 N","433 N"],
+    c:1,
+    hint:["Use vertical equilibrium.",
+          "2T sin(30) = 500"],
+    why:"2T sin(30) = 500. Therefore T = 500 N.",
+    trap:"Use the angle measured from horizontal."
+  },
+  {
+    id:"exam1_cable_02",
+    topic:"vectors",
+    q:"A cable follows a 3-4-5 triangle and carries 100 N. Its horizontal component along the 3 side is:",
+    a:["40 N","60 N","80 N","100 N"],
+    c:1,
+    hint:["Use the triangle side ratio.",
+          "Fx = 100(3/5)"],
+    why:"Fx = 100(3/5) = 60 N."
+  },
+  {
+    id:"exam1_3d_01",
+    topic:"vectors",
+    q:"A cable runs from A(1,2,3) to B(4,6,3). Find its unit direction vector.",
+    a:["(3,4,0)","(0.6,0.8,0)","(4,6,3)","(0.8,0.6,0)"],
+    c:1,
+    hint:["Subtract B minus A.",
+          "Divide (3,4,0) by its length 5."],
+    why:"rAB = (3,4,0), length = 5, lambda = (0.6,0.8,0)."
+  },
+  {
+    id:"exam1_moment_01",
+    topic:"moments",
+    q:"For r = (2,3,0) m and F = (4,-2,5) N, what is the z-component of r cross F?",
+    a:["16 N m","-16 N m","10 N m","15 N m"],
+    c:1,
+    hint:["Mz = rx Fy - ry Fx.",
+          "2(-2) - 3(4)"],
+    why:"Mz = -4 - 12 = -16 N m.",
+    trap:"Do not reverse the cross-product order."
+  },
+  {
+    id:"exam1_roller_01",
+    topic:"fbd",
+    q:"A frictionless roller rests on a 19 degree incline. Which direction is its support reaction?",
+    a:["Always vertical","Along the incline","Normal to the incline","Always horizontal"],
+    c:2,
+    hint:["A smooth roller has one normal reaction."],
+    why:"The reaction is perpendicular to the inclined surface."
+  },
+  {
+    id:"exam1_member_01",
+    topic:"equilibrium",
+    q:"A two-force bar is assumed in tension, but the calculated force is negative. What does this mean?",
+    a:["It is in compression","Its force is zero","It is in greater tension","Gravity is negative"],
+    c:0,
+    hint:["A negative result reverses the assumed direction."],
+    why:"A negative axial force reverses the assumed tensile direction, indicating compression."
+  }
+];
+
+for (const q of extraExamQuestions) {
+  if (!QUESTIONS.some(existing => existing.id === q.id)) {
+    QUESTIONS.push(q);
+  }
+}
+
+// Exclude unrelated recall cards.
+for (let i = MEMORY.length - 1; i >= 0; i--) {
+  if (/centroid|distributed|cutout|hole/i.test(MEMORY[i][0])) {
+    MEMORY.splice(i, 1);
+  }
+}
+
+// Remove off-scope formulas and video searches.
+for (let i = FORMULAS.length - 1; i >= 0; i--) {
+  if (excludedExamTopics.has(FORMULAS[i].id)) {
+    FORMULAS.splice(i, 1);
+  }
+}
+for (let i = VIDEOS.length - 1; i >= 0; i--) {
+  if (/centroid|distributed/i.test(VIDEOS[i].topic)) {
+    VIDEOS.splice(i, 1);
+  }
+}
+
+// Hide unrelated lesson buttons from the main menu.
+document.querySelectorAll("#home button").forEach(button => {
+  const action = button.getAttribute("onclick") || "";
+  if (/startTopic\(['"](centroids|distributed)['"]\)/.test(action)) {
+    button.hidden = true;
+    button.style.display = "none";
+  }
+});
+
 renderStats();
 renderMastery();
 
@@ -1473,6 +1591,151 @@ renderMastery();
 
 <script src="./statics-solver.js" defer></script>
   <script src="./october-upgrade.js"></script>
-  <script src="./mastery-upgrade.js"></script>
+  <script src="./mastery-engine.js"></script>
+  <script src="./independent-solver.js"></script>
+  <script src="./adaptive-mastery.js"></script>
+  <script src="./professor-mode.js"></script>
+  <script src="./mastery-accelerator.js"></script>
+  <script src="./certification-and-speechify.js"></script>
+  <script src="./adaptive-speechify.js"></script>
+
+<!-- STATICS_FOCUS_HOME_V1 -->
+<style>
+  #focus-home {
+    margin: 18px 0;
+  }
+  #focus-home h2 {
+    margin-bottom: 5px;
+  }
+  #focus-home .focus-intro {
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+  .focus-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .focus-action {
+    min-height: 110px;
+    padding: 20px;
+    text-align: left;
+    border-radius: 16px;
+    background: var(--soft);
+    color: var(--text);
+    border: 1px solid var(--line);
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  .focus-action span {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .focus-action:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+  #focus-more {
+    margin-top: 18px;
+  }
+  #focus-more summary {
+    cursor: pointer;
+    padding: 16px;
+    font-weight: bold;
+  }
+  @media (max-width: 600px) {
+    .focus-grid { grid-template-columns: 1fr; }
+    .focus-action { min-height: 80px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+<script>
+(() => {
+  const home = document.getElementById("home");
+  if (!home || document.getElementById("focus-home")) return;
+
+  const original = document.createElement("details");
+  original.id = "focus-more";
+  original.className = "card";
+
+  const summary = document.createElement("summary");
+  summary.textContent = "All lessons, stories and advanced tools";
+  original.appendChild(summary);
+
+  while (home.firstChild) {
+    original.appendChild(home.firstChild);
+  }
+
+  const focus = document.createElement("section");
+  focus.id = "focus-home";
+  focus.className = "card";
+
+  const heading = document.createElement("h2");
+  heading.textContent = "What are we learning today?";
+
+  const intro = document.createElement("p");
+  intro.className = "focus-intro";
+  intro.textContent =
+    "One skill at a time. Learn, practice, recall, repeat.";
+
+  const grid = document.createElement("div");
+  grid.className = "focus-grid";
+
+  const choices = [
+    ["Practice", "Work on weak spots", "startWeak"],
+    ["Flashcards", "Recall without pressure", "startMemory"],
+    ["Exam Diagnostic", "Find what needs work", "startDiagnostic"],
+    ["Study Tools", "Lessons, stories and videos", null]
+  ];
+
+  choices.forEach(([title, description, action]) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "focus-action";
+
+    const label = document.createElement("strong");
+    label.textContent = title;
+
+    const subtitle = document.createElement("span");
+    subtitle.textContent = description;
+
+    button.append(label, subtitle);
+
+    button.addEventListener("click", () => {
+      if (!action) {
+        original.open = !original.open;
+        if (original.open) {
+          original.scrollIntoView({block: "start"});
+        }
+        return;
+      }
+
+      const existing = original.querySelector(
+        'button[onclick*="' + action + '"]'
+      );
+
+      if (existing) {
+        existing.click();
+      } else {
+        alert("This activity needs to be checked.");
+      }
+    });
+
+    grid.appendChild(button);
+  });
+
+  focus.append(heading, intro, grid);
+  home.append(focus, original);
+})();
+</script>
+
 </body>
 </html>
